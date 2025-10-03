@@ -35,12 +35,8 @@ const app = new Elysia()
 		const newData = {
 			timestamp: Date.now(),
 			class: query.class ?? "Unknown",
-			confidence: query.confidence
-				? parseFloat(query.confidence)
-				: undefined,
-			fire_score: query.fire_score
-				? parseFloat(query.fire_score)
-				: undefined,
+			confidence: query.confidence ? parseFloat(query.confidence) : undefined,
+			fire_score: query.fire_score ? parseFloat(query.fire_score) : undefined,
 			nofire_score: query.nofire_score
 				? parseFloat(query.nofire_score)
 				: undefined,
@@ -61,5 +57,5 @@ const app = new Elysia()
 	.listen({ hostname: HOSTNAME, port: PORT });
 
 console.log(
-	`Fire Detection Server is running at http://${app.server?.hostname}:${app.server?.port}`,
+	`IGNIS server is running at http://${app.server?.hostname}:${app.server?.port}`,
 );
