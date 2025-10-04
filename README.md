@@ -109,6 +109,27 @@ curl "http://localhost:3000/pico_data/history"
 
 ---
 
+## Quick burst test with xargs (parallel load)
+
+```bash
+seq 1 20 | xargs -I{} -P5 sh -c '
+i="$1"
+if [ $((i % 2)) -eq 1 ]; then
+  cls=Fire
+  base=$(awk -v i="$i" '\''BEGIN{printf "%.3f", 0.60 + (i*0.008)}'\'')
+else
+  cls=NoFire
+  base=$(awk -v i="$i" '\''BEGIN{printf "%.3f", 0.40 - (i*0.004)}'\'')
+fi
+fire_score=$(awk -v base="$base" -v cls="$cls" '\''BEGIN{ if (cls=="Fire"){f=base}else{f=1-base} if (f>0.99) f=0.99; if (f<0) f=0; printf "%.3f", f }'\'')
+nofire_score=$(awk -v f="$fire_score" '\''BEGIN{printf "%.3f", 1-f}'\'')
+confidence=$(awk -v f="$fire_score" -v n="$nofire_score" -v i="$i" '\''BEGIN{srand(); noise=(rand()-0.5)*0.08; top = (f>n? f : n); c = top - 0.02 + noise; if (c<0.01) c=0.01; if (c>0.99) c=0.99; printf "%.3f", c }'\'')
+curl -s -w "\n" "http://localhost:3000/pico_data?class=$cls&confidence=$confidence&fire_score=$fire_score&nofire_score=$nofire_score"
+' _ {}
+```
+
+---
+
 ## Expected behavior summary
 
 - Every `GET /pico_data?...` produces a logged block with the four fields (`class`, `confidence`, `fire_score`, `nofire_score`) and returns `ACK`.
