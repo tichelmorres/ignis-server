@@ -118,7 +118,7 @@ if [ $((i % 2)) -eq 1 ]; then
   cls=Fire
   base=$(awk -v i="$i" '\''BEGIN{printf "%.3f", 0.60 + (i*0.008)}'\'')
 else
-  cls=NoFire
+  cls=Nofire
   base=$(awk -v i="$i" '\''BEGIN{printf "%.3f", 0.40 - (i*0.004)}'\'')
 fi
 fire_score=$(awk -v base="$base" -v cls="$cls" '\''BEGIN{ if (cls=="Fire"){f=base}else{f=1-base} if (f>0.99) f=0.99; if (f<0) f=0; printf "%.3f", f }'\'')
